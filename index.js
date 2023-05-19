@@ -3,12 +3,10 @@ const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5500;
 
 app.use(cors());
 app.use(express.json());
-
-console.log(process.env.USER_PASS);
 
 const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.USER_PASS}@cluster0.q8lcz01.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -28,8 +26,14 @@ async function run() {
 
     const toysCollection = client.db("toysDB").collection("products");
 
-    app.get("/products", (req, res) => {
-      const result = toysCollection.find().toArray();
+    app.get("/products", async (req, res) => {
+      const result = await toysCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.post("/products", async (req, res) => {
+      const result = await toysCollection.insertOne(req.body);
+      console.log(result);
       res.send(result);
     });
 
