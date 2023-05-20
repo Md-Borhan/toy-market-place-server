@@ -52,8 +52,37 @@ async function run() {
     app.get("/myToys/:email", async (req, res) => {
       const query = { email: req.params.email };
       const myToy = await toysCollection.find(query).toArray();
-      console.log(myToy);
       res.send(myToy);
+    });
+
+    app.get("/allToys/:id", async (req, res) => {
+      const query = { _id: new ObjectId(req.params.id) };
+      const result = await toysCollection.findOne(query);
+      res.send(result);
+    });
+
+    // Update Toys
+    app.patch("/updateToy/:id", async (req, res) => {
+      const filter = { _id: new ObjectId(req.params.id) };
+      const options = { upsert: true };
+      const updateToys = req.body;
+      const toys = {
+        $set: {
+          price: updateToys.price,
+          quantity: updateToys.quantity,
+          description: updateToys.description,
+        },
+      };
+      const updatedToys = await toysCollection.updateOne(filter, toys, options);
+      res.send(updatedToys);
+    });
+
+    app.delete("/deleteToy/:id", async (req, res) => {
+      const filter = { _id: new ObjectId(req.params.id) };
+      console.log(filter);
+      const result = await toysCollection.deleteOne(filter);
+      console.log(result);
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
