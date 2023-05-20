@@ -62,15 +62,15 @@ async function run() {
     });
 
     // Update Toys
-    app.patch("/updateToy/:id", async (req, res) => {
+    app.put("/updateToy/:id", async (req, res) => {
       const filter = { _id: new ObjectId(req.params.id) };
       const options = { upsert: true };
-      const updateToys = req.body;
+      const { price, quantity, description } = req.body;
       const toys = {
         $set: {
-          price: updateToys.price,
-          quantity: updateToys.quantity,
-          description: updateToys.description,
+          price: price,
+          quantity: quantity,
+          description: description,
         },
       };
       const updatedToys = await toysCollection.updateOne(filter, toys, options);
@@ -79,7 +79,6 @@ async function run() {
 
     app.delete("/deleteToy/:id", async (req, res) => {
       const filter = { _id: new ObjectId(req.params.id) };
-      console.log(filter);
       const result = await toysCollection.deleteOne(filter);
       console.log(result);
       res.send(result);
