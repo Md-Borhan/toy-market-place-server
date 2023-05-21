@@ -45,7 +45,7 @@ async function run() {
     });
 
     app.get("/allToys", async (req, res) => {
-      const result = await toysCollection.find().toArray();
+      const result = await toysCollection.find().limit(20).toArray();
       res.send(result);
     });
 
@@ -63,9 +63,12 @@ async function run() {
     });
 
     app.get("/toySearch/:text", async (req, res) => {
-      const text = { name: req.params.text };
-      const allData = await toysCollection.find(text).toArray();
-      res.send(allData);
+      const text = req.params.text;
+      const allData = await toysCollection.find().toArray();
+      const result = allData.filter((data) =>
+        data.name.toLowerCase().includes(text.toLowerCase())
+      );
+      res.send(result);
     });
 
     app.put("/updateToy/:id", async (req, res) => {
